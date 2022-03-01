@@ -85,6 +85,12 @@ module.exports = {
       plugins,
       resolve: {
         ...config.resolve,
+        alias: {
+          ...config.resolve.alias,
+          '@sculpt-ui/gallery': path.resolve('../../Sculpt/UI/packages/gallery/'),
+          react: path.resolve('../node_modules/react'),
+          'react-dom': path.resolve('../node_modules/react-dom'),
+        },
         // resolve .tsx first
         extensions: [
           '.tsx',
@@ -136,6 +142,7 @@ module.exports = {
                         '@mui/base': '../packages/mui-base/src',
                         '@mui/material-next': '../packages/mui-material-next/src',
                         '@mui/joy': '../packages/mui-joy/src',
+                        '@sculpt-ui/gallery': path.resolve('../../Sculpt/UI/packages/gallery/'),
                       },
                       transformFunctions: ['require'],
                     },
@@ -155,6 +162,7 @@ module.exports = {
       },
     };
   },
+  experimental: { externalDir: true },
   env: {
     COMMIT_REF: process.env.COMMIT_REF,
     ENABLE_AD: process.env.ENABLE_AD,
@@ -182,13 +190,6 @@ module.exports = {
 
       pages2.forEach((page) => {
         if (process.env.PULL_REQUEST !== 'true' && page.pathname.startsWith('/experiments')) {
-          return;
-        }
-        // The blog is not translated
-        if (
-          userLanguage !== 'en' &&
-          (page.pathname === '/blog' || page.pathname.startsWith('/blog/'))
-        ) {
           return;
         }
         if (!page.children) {

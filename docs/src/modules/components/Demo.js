@@ -10,6 +10,7 @@ import { AdCarbonInline } from 'docs/src/modules/components/AdCarbon';
 import { useCodeVariant } from 'docs/src/modules/utils/codeVariant';
 import { CODE_VARIANTS } from 'docs/src/modules/constants';
 import { useUserLanguage, useTranslate } from 'docs/src/modules/utils/i18n';
+import { TemplateMacro } from '../../../../../Sculpt/UI/packages/gallery/lib/macro';
 
 const DemoToolbar = React.lazy(() => import('./DemoToolbar'));
 // Sync with styles from DemoToolbar
@@ -96,10 +97,10 @@ const DemoRoot = styled('div', {
     }),
     /* Make no difference between the demo and the markdown. */
     ...(bg === 'inline' && {
-      padding: theme.spacing(0),
+      padding: theme.spacing(3),
     }),
     ...(hiddenToolbar && {
-      paddingTop: theme.spacing(1),
+      paddingTop: theme.spacing(3),
     }),
   },
   /* Isolate the demo with an outline. */
@@ -148,7 +149,7 @@ const InitialFocus = styled(IconButton)(({ theme }) => ({
   pointerEvents: 'none',
 }));
 export default function Demo(props) {
-  const { demo, demoOptions, disableAd, githubLocation } = props;
+  const { demo, demoOptions, disableAd, githubLocation, componentsToWrap } = props;
   const t = useTranslate();
   const codeVariant = useCodeVariant();
   const demoData = useDemoData(codeVariant, demo, githubLocation);
@@ -201,6 +202,14 @@ export default function Demo(props) {
   const initialFocusRef = React.useRef(null);
 
   const [showAd, setShowAd] = React.useState(false);
+  const WrappedDemo = React.useCallback(() => {
+    const component = DemoComponent();
+    return (
+      <TemplateMacro componentsToWrap={componentsToWrap} renderedComponent={component}>
+        <DemoComponent />
+      </TemplateMacro>
+    );
+  }, [DemoComponent, componentsToWrap]);
 
   return (
     <Root>
@@ -216,7 +225,7 @@ export default function Demo(props) {
         <DemoSandboxed
           key={demoKey}
           style={demoSandboxedStyle}
-          component={DemoComponent}
+          component={WrappedDemo}
           iframe={demoOptions.iframe}
           name={demoName}
           onResetDemoClick={resetDemo}
@@ -264,6 +273,7 @@ export default function Demo(props) {
 }
 
 Demo.propTypes = {
+  componentsToWrap: PropTypes.array.isRequired,
   demo: PropTypes.object.isRequired,
   demoOptions: PropTypes.object.isRequired,
   disableAd: PropTypes.bool.isRequired,

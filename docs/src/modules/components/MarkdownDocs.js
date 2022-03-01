@@ -94,6 +94,7 @@ function MarkdownDocs(props) {
             }}
             disableAd={disableAd}
             demoOptions={renderedMarkdownOrDemo}
+            componentsToWrap={headers.components}
             githubLocation={`${process.env.SOURCE_CODE_REPO}/blob/v${process.env.LIB_VERSION}/docs/src/${name}`}
           />
         );
